@@ -1,5 +1,5 @@
 package com.jinterp;
 
-public class Attribute {
+public abstract class Attribute {
 
 }

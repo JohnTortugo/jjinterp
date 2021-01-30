@@ -2,9 +2,10 @@ package com.jinterp;
 
 public class Main {
     public static void main(String[] args) {
-        Loader l = new Loader("C:\\Users\\Cesar\\Desktop\\Jinterp\\jinterp\\resources");
+        Loader l = new Loader("/wf/jjinterp/resources");
 
-        l.load("TestOne");
+        ClassDefinition cd = l.load("EmptyClass");
 
+        cd.print();
     }
 }

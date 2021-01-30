@@ -51,7 +51,6 @@ public class Loader {
             List<Attribute> attributes = fetchAttributes(wrapped, constantpool);
 
             return new ClassDefinition(
-                    magic,
                     miv,
                     mav,
                     access_flags,
@@ -112,7 +111,7 @@ public class Loader {
             byte[] info = new byte[attribute_length];
 
             for (int j=0; j<attribute_length; j++) {
-                info[i] = wrapped.get();
+                info[j] = wrapped.get();
             }
 
             entries.add( build_attribute(attribute_name_index, info, constantpool) );
@@ -221,8 +220,6 @@ public class Loader {
         ByteBuffer wrapped = ByteBuffer.wrap(info);
         String name = ((ConstantPoolUtf8) constantpool.get(attribute_name_index)).getValue();
 
-        System.out.println("Looking for attribute info " + name);
-
         if (name.equalsIgnoreCase("code")) {
             short max_stack = wrapped.getShort();
             short max_locals = wrapped.getShort();
@@ -248,12 +245,18 @@ public class Loader {
 
             return new CodeAttribute(max_stack, max_locals, parse_bytecode(bytes), exception_table, attributes);
         }
+        else if (name.equalsIgnoreCase("SourceFile")) {
+            short sourcefile_index = wrapped.getShort();
 
-        /*
-        if name == "SourceFile" {
-            let sourcefile_index = wrapped.getShort();
-            source_file = Some( constant_pool[sourcefile_index as usize].utf8() );
+        	return new SourceFileAttribute(sourcefile_index);
         }
+        else if (name.equalsIgnoreCase("LineNumberTable")) {
+        	
+        }
+        else {
+            System.out.println("Didn't find code for handling attribute: " + name);
+        }
+        /*
         else if name == "InnerClasses" {
             let number_of_classes = wrapped.getShort();
             let mut classes = Vec::with_capacity(number_of_classes as usize);
@@ -314,23 +317,6 @@ public class Loader {
 
             bootstrap_methods = Some(bs_methods);
         }
-        else if name == "LineNumberTable" {
-            //println!("LineNumberTable attribute");
-        }
-        else if name == "StackMapTable" {
-            //println!("StackMapTable attribute");
-        }
-        else {
-            panic!("Unknown attribute name: {}", name);
-        }
-        
-        AttributeInfo {
-            name : name.to_string(),
-            source_file,
-            bootstrap_methods,
-            inner_classes,
-            code,
-        }
         */
         return null;
     }
@@ -340,7 +326,7 @@ public class Loader {
         List<BytecodeInstruction> bytecodes = new ArrayList<BytecodeInstruction>();
 
         while (wrapped.hasRemaining()) {
-            short opcode = wrapped.get();
+            int opcode = wrapped.get() & 0xFF;
 
             switch (opcode) {
                 case   2: bytecodes.add( new Iconstm1() ); break;

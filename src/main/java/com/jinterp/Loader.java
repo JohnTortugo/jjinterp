@@ -8,20 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.io.Files;
-import com.jinterp.bytecodes.*;
-import com.jinterp.constantpool.ConstantPoolClass;
-import com.jinterp.constantpool.ConstantPoolEntry;
-import com.jinterp.constantpool.ConstantPoolFloat;
-import com.jinterp.constantpool.ConstantPoolInteger;
-import com.jinterp.constantpool.ConstantPoolString;
-import com.jinterp.constantpool.ConstantPoolUtf8;
-import com.jinterp.constantpool.Dynamic;
-import com.jinterp.constantpool.FieldReference;
-import com.jinterp.constantpool.InterfaceMethodReference;
-import com.jinterp.constantpool.MethodHandle;
-import com.jinterp.constantpool.InvokeDynamic;
-import com.jinterp.constantpool.MethodReference;
-import com.jinterp.constantpool.NameAndType;
+import com.jinterp.spec.*;
+import com.jinterp.spec.bytecodes.*;
+import com.jinterp.spec.constantpool.*;
 
 public class Loader {
     private String classpath;
@@ -251,7 +240,16 @@ public class Loader {
         	return new SourceFileAttribute(sourcefile_index);
         }
         else if (name.equalsIgnoreCase("LineNumberTable")) {
-        	
+            return new LineNumberTableAttribute();
+        }
+        else if (name.equalsIgnoreCase("Signature")) {
+            return new SignatureAttribute();
+        }
+        else if (name.equalsIgnoreCase("StackMapTable")) {
+            return new StackMapTableAttribute();
+        }
+        else if (name.equalsIgnoreCase("Exceptions")) {
+            return new ExceptionsAttribute();
         }
         else {
             System.out.println("Didn't find code for handling attribute: " + name);
@@ -349,6 +347,10 @@ public class Loader {
                 case  27: bytecodes.add( new Iload1() ); break;
                 case  28: bytecodes.add( new Iload2() ); break;
                 case  29: bytecodes.add( new Iload3() ); break;
+                case  30: bytecodes.add( new Lload0() ); break;
+                case  31: bytecodes.add( new Lload1() ); break;
+                case  32: bytecodes.add( new Lload2() ); break;
+                case  33: bytecodes.add( new Lload3() ); break;
                 case  42: bytecodes.add( new Aload0() ); break;
                 case  43: bytecodes.add( new Aload1() ); break;
                 case  44: bytecodes.add( new Aload2() ); break;
@@ -358,6 +360,10 @@ public class Loader {
                 case  60: bytecodes.add( new Istore1() ); break;
                 case  61: bytecodes.add( new Istore2() ); break;
                 case  62: bytecodes.add( new Istore3() ); break;
+                case  63: bytecodes.add( new Lstore0() ); break;
+                case  64: bytecodes.add( new Lstore1() ); break;
+                case  65: bytecodes.add( new Lstore2() ); break;
+                case  66: bytecodes.add( new Lstore3() ); break;
                 case  75: bytecodes.add( new Astore0() ); break;
                 case  76: bytecodes.add( new Astore1() ); break;
                 case  77: bytecodes.add( new Astore2() ); break;
@@ -365,7 +371,9 @@ public class Loader {
                 case  83: bytecodes.add( new Aastore() ); break;
                 case  89: bytecodes.add( new Dup() ); break;
                 case  96: bytecodes.add( new Iadd() ); break;
+                case  97: bytecodes.add( new Ladd() ); break;
                 case 132: bytecodes.add( new Iinc(wrapped.get(), wrapped.get()) ); break;
+                case 148: bytecodes.add( new Lcmp() ); break;
                 case 153: bytecodes.add( new Ifeq(wrapped.getShort()) ); break;
                 case 154: bytecodes.add( new Ifne(wrapped.getShort()) ); break;
                 case 155: bytecodes.add( new Iflt(wrapped.getShort()) ); break;
@@ -378,8 +386,11 @@ public class Loader {
                 case 162: bytecodes.add( new IfIcmpge(wrapped.getShort()) ); break;
                 case 163: bytecodes.add( new IfIcmpgt(wrapped.getShort()) ); break;
                 case 164: bytecodes.add( new IfIcmple(wrapped.getShort()) ); break;
+                case 165: bytecodes.add( new IfAcmpeq(wrapped.getShort())); break;
+                case 166: bytecodes.add( new IfAcmpne(wrapped.getShort())); break;
                 case 167: bytecodes.add( new Goto(wrapped.getShort()) ); break;
                 case 172: bytecodes.add( new Ireturn() ); break;
+                case 176: bytecodes.add( new Areturn() ); break;
                 case 177: bytecodes.add( new Return() ); break;
                 case 178: bytecodes.add( new Getstatic(wrapped.getShort()) ); break;
                 case 179: bytecodes.add( new Putstatic(wrapped.getShort()) ); break;
@@ -389,6 +400,7 @@ public class Loader {
                 case 186: bytecodes.add( new Invokedynamic(wrapped.getShort(), wrapped.getShort()) ); break;
                 case 187: bytecodes.add( new New(wrapped.getShort()) ); break;
                 case 189: bytecodes.add( new Anewarray(wrapped.getShort()) ); break;
+                case 191: bytecodes.add( new Athrow() ); break;
                 default: {
                     System.err.println("Unrecognized opcode " + opcode);
                     System.exit(1);

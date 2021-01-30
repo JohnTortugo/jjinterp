@@ -2,10 +2,9 @@ package com.jinterp;
 
 public class Main {
     public static void main(String[] args) {
-        Loader l = new Loader("/wf/jjinterp/resources");
+        Loader jloader = new Loader("/wf/jjinterp/resources");
+        Interpreter jinterp = new Interpreter(jloader);
 
-        ClassDefinition cd = l.load("EmptyClass");
-
-        cd.print();
+        jinterp.run("EmptyClass");
     }
 }

@@ -5,6 +5,6 @@ public class Main {
         Loader jloader = new Loader("/wf/jjinterp/resources");
         Interpreter jinterp = new Interpreter(jloader);
 
-        jinterp.run("EmptyClass");
+        jinterp.run("JustMain");
     }
 }

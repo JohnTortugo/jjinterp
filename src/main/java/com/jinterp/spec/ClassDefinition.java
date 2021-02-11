@@ -1,6 +1,7 @@
 package com.jinterp.spec;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import com.jinterp.spec.constantpool.ConstantPoolClass;
 import com.jinterp.spec.constantpool.ConstantPoolEntry;
@@ -148,6 +149,13 @@ public class ClassDefinition {
 		this.parentClass = parentClass;
 	}
 
+	public String getParentClassName() {
+		short idx = this.getParentClass();
+		return idx == 0 ? 
+				"java/lang/Object" :
+				((ConstantPoolClass)this.getConstantPool().get(idx)).getName();
+	}
+
 	public List<ConstantPoolEntry> getConstantPool() {
 		return constantPool;
 	}
@@ -162,6 +170,16 @@ public class ClassDefinition {
 
 	public void setInterfaces(List<Short> interfaces) {
 		this.interfaces = interfaces;
+	}
+
+	public List<String> getInterfacesNames() {
+		List<String> interfaces = new ArrayList<>();
+
+		for (short idx : this.getInterfaces()) {
+			interfaces.add( ((ConstantPoolClass)this.getConstantPool().get(idx)).getName() );
+		}
+
+		return interfaces;
 	}
 
 	public List<Field> getFields() {
@@ -186,5 +204,15 @@ public class ClassDefinition {
 
 	public void setAttributes(List<Attribute> attributes) {
 		this.attributes = attributes;
+	}
+
+	public Method getMethod(String name) {
+		for (Method m : this.getMethods()) {
+			if (m.getName().equals(name)) { // Keeping this simple for now
+				return m;
+			}
+		}
+
+		return null;
 	}
 }

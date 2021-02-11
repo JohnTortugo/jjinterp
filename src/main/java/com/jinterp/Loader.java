@@ -2,6 +2,7 @@ package com.jinterp;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -51,7 +52,10 @@ public class Loader {
                     methods,
                     attributes
                 );
-        } 
+        }
+        catch (FileNotFoundException e) {
+            return null;
+        }
         catch (IOException e) {
             e.printStackTrace();
         }
